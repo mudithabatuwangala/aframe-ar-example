@@ -60,24 +60,24 @@
       shadow="type: pcfsoft"
       xr-mode-ui="XRMode: xr"
     >
-      <a-light
+      <!-- <a-light
         type="directional"
         light="castShadow:true;"
         position="1 2 1"
         intensity="1.5"
       >
-      </a-light>
+      </a-light> -->
 
-      <!-- <a-light
+      <a-light
         type="directional"
         light="castShadow:true;"
         position="1 1 1"
         intensity="1.57"
         shadow-camera-automatic="#objects"
       ></a-light>
-      <a-camera position="0 0.4 0" wasd-controls="acceleration:10;"></a-camera> -->
+      <a-camera position="0 0.4 0" wasd-controls="acceleration:10;"></a-camera>
 
-      <a-camera position="0 0.4 0"></a-camera>
+      <!-- <a-camera position="0 0.4 0"></a-camera> -->
 
       <!-- Invisible ground target -->
       <a-entity id="ground"></a-entity>
@@ -170,8 +170,6 @@
         width="2"
         height="2"
       ></a-plane>
-
-      <a-sky color="#ECECEC" hide-on-enter-ar></a-sky> -->
 
       <a-sky color="#ECECEC" hide-on-enter-ar></a-sky>
     </a-scene>
