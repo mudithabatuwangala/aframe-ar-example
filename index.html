@@ -1,40 +1,178 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <title>Hello, AR World! • A-Frame</title>
-    <meta name="description" content="Hello, AR World! • A-Frame">
+    <meta charset="utf-8" />
+    <title>Winter AR – Snowman & Trees</title>
+    <meta name="description" content="Winter themed AR using A-Frame" />
     <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
-    <!-- script src="https://aframe.io/aframe/dist/aframe-master.min.js"></script -->
+    <!-- A-Frame -->
     <script>
-      AFRAME.registerComponent('follow-shadow', {
-        schema: {type: 'selector'},
-        init() {this.el.object3D.renderOrder = -1;},
+      AFRAME.registerComponent("follow-shadow", {
+        schema: { type: "selector" },
+        init() {
+          this.el.object3D.renderOrder = -1;
+        },
         tick() {
           if (this.data) {
             this.el.object3D.position.copy(this.data.object3D.position);
-            this.el.object3D.position.y-=0.001; // stop z-fighting
+            this.el.object3D.position.y -= 0.001; // stop z-fighting
           }
-        }
+        },
+      });
+    </script>
+
+    <!-- Simple tap-to-spawn logic -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const scene = document.querySelector("a-scene");
+        const snowmanTemplate = document.querySelector("#snowman");
+        const treeTemplate = document.querySelector("#tree");
+
+        scene.addEventListener("click", (event) => {
+          // randomly choose snowman or tree
+          const spawnSnowman = Math.random() > 0.5;
+
+          const newObject = spawnSnowman
+            ? snowmanTemplate.cloneNode(true)
+            : treeTemplate.cloneNode(true);
+
+          newObject.setAttribute("visible", "true");
+
+          // place object at AR hit-test position
+          const point = event.detail?.intersection?.point;
+          if (point) {
+            newObject.setAttribute("position", point);
+          } else {
+            newObject.setAttribute("position", "0 0 -1");
+          }
+
+          scene.appendChild(newObject);
+        });
       });
     </script>
   </head>
+
   <body>
     <a-scene
       reflection="directionalLight: a-light[type=directional]"
-      ar-hit-test="target: #objects;"
+      ar-hit-test="target: #ground;"
       renderer="colorManagement: true; exposure: 1; toneMapping: ACESFilmic"
       shadow="type: pcfsoft"
       xr-mode-ui="XRMode: xr"
     >
-      <a-light type="directional" light="castShadow:true;" position="1 1 1" intensity="1.57" shadow-camera-automatic="#objects"></a-light>
-      <a-camera position="0 0.4 0" wasd-controls="acceleration:10;"></a-camera>
+      <a-light
+        type="directional"
+        light="castShadow:true;"
+        position="1 2 1"
+        intensity="1.5"
+      >
+      </a-light>
+
+      <!-- <a-light
+        type="directional"
+        light="castShadow:true;"
+        position="1 1 1"
+        intensity="1.57"
+        shadow-camera-automatic="#objects"
+      ></a-light>
+      <a-camera position="0 0.4 0" wasd-controls="acceleration:10;"></a-camera> -->
+
+      <a-camera position="0 0.4 0"></a-camera>
+
+      <!-- Invisible ground target -->
+      <a-entity id="ground"></a-entity>
+
+      <!-- SNOWMAN TEMPLATE (hidden) -->
+      <a-entity id="snowman" visible="false" scale="0.2 0.2 0.2" shadow>
+        <a-sphere position="0 0.25 0" radius="0.25" color="#FFFFFF"></a-sphere>
+        <a-sphere position="0 0.6 0" radius="0.2" color="#FFFFFF"></a-sphere>
+        <a-sphere position="0 0.9 0" radius="0.15" color="#FFFFFF"></a-sphere>
+        <!-- Eyes -->
+        <a-sphere
+          position="-0.05 0.95 0.13"
+          radius="0.02"
+          color="#000"
+        ></a-sphere>
+        <a-sphere
+          position="0.05 0.95 0.13"
+          radius="0.02"
+          color="#000"
+        ></a-sphere>
+        <!-- Nose -->
+        <a-cone
+          position="0 0.9 0.18"
+          radius-bottom="0.02"
+          radius-top="0"
+          height="0.06"
+          color="#FF6600"
+        >
+        </a-cone>
+      </a-entity>
+
+      <!-- PINE TREE TEMPLATE (hidden) -->
+      <a-entity id="tree" visible="false" scale="0.2 0.2 0.2" shadow>
+        <a-cone
+          position="0 0.2 0"
+          radius-bottom="0.2"
+          radius-top="0"
+          height="0.4"
+          color="#0A7D00"
+        ></a-cone>
+        <a-cone
+          position="0 0.5 0"
+          radius-bottom="0.15"
+          radius-top="0"
+          height="0.35"
+          color="#0A7D00"
+        ></a-cone>
+        <a-cone
+          position="0 0.75 0"
+          radius-bottom="0.1"
+          radius-top="0"
+          height="0.3"
+          color="#0A7D00"
+        ></a-cone>
+        <a-cylinder
+          position="0 0.05 0"
+          radius="0.05"
+          height="0.1"
+          color="#8B4513"
+        ></a-cylinder>
+      </a-entity>
+      <!-- 
       <a-entity id="objects" scale="0.2 0.2 0.2" position="0 0 -1" shadow>
         <a-box position="-1 0.5 1" rotation="0 45 0" color="#4CC3D9"></a-box>
         <a-sphere position="0 1.25 -1" radius="1.25" color="#EF2D5E"></a-sphere>
-        <a-cylinder position="1 0.75 1" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
-      </a-entity>
-      <a-plane follow-shadow="#objects" material="shader:shadow" shadow="cast:false;" rotation="-90 0 0" width="2" height="2"></a-plane>
+        <a-cylinder
+          position="1 0.75 1"
+          radius="0.5"
+          height="1.5"
+          color="#FFC65D"
+        ></a-cylinder>
+      </a-entity> -->
+
+      <!-- Shadow plane -->
+      <a-plane
+        follow-shadow="#ground"
+        material="shader: shadow"
+        shadow="cast:false;"
+        rotation="-90 0 0"
+        width="4"
+        height="4"
+      >
+      </a-plane>
+
+      <!-- <a-plane
+        follow-shadow="#objects"
+        material="shader:shadow"
+        shadow="cast:false;"
+        rotation="-90 0 0"
+        width="2"
+        height="2"
+      ></a-plane>
+
+      <a-sky color="#ECECEC" hide-on-enter-ar></a-sky> -->
+
       <a-sky color="#ECECEC" hide-on-enter-ar></a-sky>
     </a-scene>
   </body>
